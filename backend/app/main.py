@@ -60,7 +60,7 @@ async def startup_event():
     Initializes the database and creates tables if they don't exist.
     """
     init_db()
-    print(f"🚀 {settings.APP_NAME} started successfully!")
+    print(f"[STARTUP] {settings.APP_NAME} started successfully!")
 
 
 @app.get("/", tags=["Root"])

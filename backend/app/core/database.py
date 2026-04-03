@@ -49,4 +49,4 @@ def init_db():
     This function should be called on application startup to ensure
     all database tables are created based on the defined models.
     """
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, checkfirst=True)

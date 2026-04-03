@@ -12,7 +12,10 @@ class Settings(BaseSettings):
 
     # Application
     APP_NAME: str = "QR Code Attendance System"
-    DEBUG: bool = False
+    APP_DEBUG: bool = False
+    
+    # Override env_file to ensure .env is loaded first
+    model_config = {'env_file': '.env', 'extra': 'ignore'}
 
     # Security
     SECRET_KEY: str = "your-super-secret-key-change-this-in-production"
@@ -39,10 +42,6 @@ class Settings(BaseSettings):
             f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 
 # Global settings instance
