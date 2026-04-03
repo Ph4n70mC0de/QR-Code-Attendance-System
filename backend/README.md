@@ -192,11 +192,27 @@ backend/
 
 ## Security
 
-- **Password hashing** - Bcrypt for secure password storage
-- **JWT tokens** - Short-lived access tokens with configurable expiration
-- **CORS protection** - Configurable allowed origins
-- **Input validation** - Pydantic schemas for all inputs
+### Authentication & Authorization
+- **Password hashing** - Bcrypt for secure password storage with salt
+- **JWT tokens** - Short-lived access tokens (30 min default) with refresh tokens (7 days)
+- **Password policy** - Minimum 8 characters, requires uppercase, number, and special character
+- **Login rate limiting** - Maximum 10 attempts per minute per IP
+- **Account lockout** - After 5 failed attempts, account locked for 15 minutes
 - **Role-based access** - Different permissions for admin, instructor, and student roles
+
+### API Security
+- **Rate limiting** - 60 requests per minute per IP (10 for auth endpoints)
+- **CORS protection** - Configurable allowed origins and methods
+- **Security headers** - HSTS, CSP, X-Frame-Options, X-Content-Type-Options
+- **Input validation** - Pydantic schemas with sanitization for all inputs
+- **Request validation** - Blocks suspicious user agents and invalid content types
+- **CSRF protection** - Token-based CSRF protection available
+
+### Data Protection
+- **SQL injection prevention** - SQLAlchemy ORM with parameterized queries
+- **XSS prevention** - Input sanitization and Content Security Policy
+- **Secure random tokens** - Cryptographically secure token generation
+- **Constant-time comparison** - For sensitive token validation
 
 ## Development
 
@@ -275,6 +291,51 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
+
+## Performance Optimizations
+
+### Database Optimizations
+- **Connection pooling** - Configurable pool size (default: 5) with overflow handling
+- **Connection recycling** - Automatic connection refresh every hour
+- **Connection health checks** - Pre-ping to detect stale connections
+- **Query optimization** - SQLAlchemy ORM with eager loading options
+
+### API Performance
+- **Rate limiting** - Prevents abuse and ensures fair usage
+- **Request logging** - Performance monitoring with timing headers
+- **Response compression** - Automatic gzip compression for large responses
+- **Caching headers** - Proper cache control for static resources
+
+### Scalability
+- **Stateless design** - JWT tokens enable horizontal scaling
+- **Connection pooling** - Efficient database connection management
+- **Async support** - FastAPI's async capabilities for I/O operations
+- **Worker processes** - Multi-worker support for production
+
+## Configuration Reference
+
+### Environment Variables
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `APP_ENV` | Environment (development/staging/production) | `development` |
+| `SECRET_KEY` | JWT signing key | *(must be set in production)* |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration time | `30` |
+| `RATE_LIMIT_PER_MINUTE` | General API rate limit | `60` |
+| `RATE_LIMIT_AUTH_PER_MINUTE` | Auth endpoint rate limit | `10` |
+| `DB_POOL_SIZE` | Database connection pool size | `5` |
+| `DB_MAX_OVERFLOW` | Maximum overflow connections | `10` |
+| `MIN_PASSWORD_LENGTH` | Minimum password length | `8` |
+
+## Monitoring & Health Checks
+
+### Health Endpoints
+- `GET /health` - Full health check with database connectivity
+- `GET /ping` - Simple ping for load balancer health checks
+
+### Response Headers
+- `X-RateLimit-Limit` - Rate limit ceiling
+- `X-RateLimit-Remaining` - Remaining requests in window
+- `X-Process-Time` - Request processing time in seconds
 
 ## License
 
