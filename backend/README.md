@@ -200,6 +200,45 @@ backend/
 
 ## Development
 
+### Database Migrations
+
+This project uses Alembic for database migrations.
+
+#### Generate a new migration after model changes:
+```bash
+python generate_migration.py
+```
+
+Or using Alembic directly:
+```bash
+python -m alembic -c alembic.ini revision --autogenerate -m "Description of changes"
+```
+
+#### Run migrations:
+```bash
+python run_migration.py
+```
+
+Or using Alembic directly:
+```bash
+python -m alembic -c alembic.ini upgrade head
+```
+
+#### Rollback one migration:
+```bash
+python -m alembic -c alembic.ini downgrade -1
+```
+
+#### View current migration status:
+```bash
+python -m alembic -c alembic.ini current
+```
+
+#### View migration history:
+```bash
+python -m alembic -c alembic.ini history
+```
+
 ### Running tests
 ```bash
 pytest
