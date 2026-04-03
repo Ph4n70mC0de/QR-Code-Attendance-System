@@ -144,9 +144,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
         
-        # Remove server information
-        response.headers.pop("Server", None)
-        response.headers.pop("X-Powered-By", None)
+        # Remove server information (use del to avoid pop on MutableHeaders)
+        if "Server" in response.headers:
+            del response.headers["Server"]
+        if "X-Powered-By" in response.headers:
+            del response.headers["X-Powered-By"]
         
         return response
 
@@ -166,13 +168,15 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
                 content={"detail": "Access denied"}
             )
         
-        # Validate content type for POST/PUT/PATCH
+        # Validate content type for POST/PUT/PATCH (except for OAuth2 token endpoint)
         if request.method in ["POST", "PUT", "PATCH"]:
             content_type = request.headers.get("Content-Type", "")
-            if "application/json" not in content_type and "multipart/form-data" not in content_type:
+            # Allow JSON, multipart/form-data, and form-urlencoded (for OAuth2)
+            allowed_types = ["application/json", "multipart/form-data", "application/x-www-form-urlencoded"]
+            if not any(allowed in content_type for allowed in allowed_types):
                 return JSONResponse(
                     status_code=415,
-                    content={"detail": "Unsupported Media Type. Use application/json or multipart/form-data"}
+                    content={"detail": "Unsupported Media Type. Use application/json, multipart/form-data, or application/x-www-form-urlencoded"}
                 )
         
         return await call_next(request)
