@@ -2,7 +2,7 @@
  * Reports Page
  * Admin-only page for viewing attendance reports with filters
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowDownTrayIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import AttendanceService from '../services/attendance.service';
@@ -20,7 +20,7 @@ const Reports = () => {
     status: '',
   });
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       const [attendanceData, usersData] = await Promise.all([
         AttendanceService.getAttendanceReport(filters, { limit: 100 }),
@@ -33,11 +33,11 @@ const Reports = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [fetchReports]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
