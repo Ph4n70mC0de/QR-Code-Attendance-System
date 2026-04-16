@@ -1,0 +1,11 @@
+# Funding
+
+## Sponsorship
+
+If you like this project, consider sponsoring it:
+
+```yaml
+paypal:
+  business: 'your-paypal-email@example.com'
+  url: 'https://www.paypal.com/paypalme/your-paypal-id'
+```
